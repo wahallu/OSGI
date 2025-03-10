@@ -1,0 +1,99 @@
+package delivery_consumer;
+
+import java.util.Scanner;
+
+
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+
+import delivery_publisher.Delivery;
+import delivery_publisher.DeliveryService;
+
+public class DeliveryConsumerActivator implements BundleActivator {
+
+    ServiceReference serviceReference;
+    private Scanner scan;
+
+    public void start(BundleContext context) throws Exception {
+        System.out.println("Delivery Consumer Started");
+        serviceReference = context.getServiceReference(DeliveryService.class.getName());
+        
+        if (serviceReference == null) {
+            System.out.println("Delivery Service is not available. Please ensure the Delivery Producer bundle is active.");
+            return;
+        }
+
+        @SuppressWarnings("unchecked")
+        DeliveryService deliveryService = (DeliveryService) context.getService(serviceReference);
+
+        scan = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n--------------Choose an option from Delivery Management--------------");
+            System.out.println("1. Insert a New Delivery Order");
+            System.out.println("2. Get Delivery Order by ID");
+            System.out.println("3. Update Delivery Order Status");
+            System.out.println("4. Cancel Delivery Order");
+            System.out.println("5. Mark Order as Delivered");
+            System.out.println("6. Exit");
+
+            System.out.print("Enter your choice: ");
+            int choice = scan.nextInt();
+            scan.nextLine(); // Consume newline character
+
+            switch (choice) {
+                case 1:
+                    System.out.println("Enter Order ID: ");
+                    String orderId = scan.nextLine();
+                    System.out.println("Enter Customer Name: ");
+                    String customerName = scan.nextLine();
+                    System.out.println("Enter Delivery Address: ");
+                    String deliveryAddress = scan.nextLine();
+                    System.out.println("Enter Delivery Date: ");
+                    String deliveryDate = scan.nextLine();
+
+                    // Creating a new Delivery object
+                    deliveryService.insertDeliveryOrder(new Delivery(orderId, customerName, deliveryAddress, "Pending", deliveryDate));
+                    break;
+                case 2:
+                    System.out.println("\nEnter the Order ID to fetch details");
+                    String fetchOrderId = scan.nextLine();
+                    Delivery delivery = deliveryService.getDeliveryOrderById(fetchOrderId);
+                    if (delivery != null) {
+                        System.out.println("Delivery Order Details: " + delivery);
+                    } else {
+                        System.out.println("Order not found!");
+                    }
+                    break;
+                case 3:
+                    System.out.println("\nEnter the Order ID to update status");
+                    String updateOrderId = scan.nextLine();
+                    System.out.println("Enter New Status: ");
+                    String newStatus = scan.nextLine();
+                    deliveryService.updateDeliveryOrderStatus(updateOrderId, newStatus);
+                    break;
+                case 4:
+                    System.out.println("\nEnter the Order ID to cancel the delivery");
+                    String cancelOrderId = scan.nextLine();
+                    deliveryService.cancelDeliveryOrder(cancelOrderId);
+                    break;
+                case 5:
+                    System.out.println("\nEnter the Order ID to mark as delivered");
+                    String deliveredOrderId = scan.nextLine();
+                    deliveryService.markOrderAsDelivered(deliveredOrderId);
+                    break;
+                case 6:
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Invalid choice! Please try again.");
+            }
+        }
+    }
+
+    public void stop(BundleContext context) throws Exception {
+        System.out.println("Delivery Consumer Stopped");
+        context.ungetService(serviceReference);
+    }
+}

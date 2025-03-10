@@ -3,9 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Order_Producer
 Bundle-SymbolicName: Order_Producer
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: order_producer.Activator
+Bundle-Activator: order_producer.OrderProducerActivator
 Bundle-Vendor: MTIT
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Automatic-Module-Name: Order.Producer
 Import-Package: org.osgi.framework;version="1.3.0"
 Bundle-ActivationPolicy: lazy
+Export-Package: order_producer

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Delivery_Consumer
+Bundle-SymbolicName: Delivery_Consumer
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: delivery_consumer.Activator
+Bundle-Vendor: MTIT
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Automatic-Module-Name: Delivery.Consumer
+Import-Package: delivery_publisher,
+ org.osgi.framework;version="1.3.0"
+Bundle-ActivationPolicy: lazy

@@ -1,0 +1,99 @@
+package main_consumer;
+
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+
+import delivery_consumer.DeliveryConsumerActivator;
+import order_consumer.OrderConsumerActivator;
+import payment_consumer.PaymentConsumerActivator;
+import staff_consumer.StaffConsumerActivator;
+
+public class Activator implements BundleActivator {
+	
+	private final OrderConsumerActivator orderConsumer = new OrderConsumerActivator();
+	private final PaymentConsumerActivator paymentConsumer = new PaymentConsumerActivator();
+	private final DeliveryConsumerActivator deliveryConsumer = new DeliveryConsumerActivator();
+	private final StaffConsumerActivator staffConsumer = new StaffConsumerActivator();
+
+	public void start(BundleContext bundleContext) throws Exception {
+		Scanner sc = new Scanner(System.in);
+		boolean running = true;
+		
+		// Display an ASCII art logo for Restaurant Management System.
+		String logo = 
+			    "RRRR   EEEEE   SSS   TTTTT   A    U   U  RRRR    A    N   N  TTTTT\n" +
+			    "R   R  E      S        T    A A   U   U  R   R  A A   NN  N    T\n" +
+			    "RRRR   EEEE    SSS     T   AAAAA  U   U  RRRR  AAAAA  N N N    T\n" +
+			    "R  R   E          S    T   A   A  U   U  R  R  A   A  N  NN    T\n" +
+			    "R   R  EEEEE   SSS     T   A   A   UUU   R   R A   A  N   N    T\n";
+        System.out.println(logo);
+        
+        // Main menu loop
+        while (running) {
+        	printMenu();
+        	System.out.println("Enter Yout Choise: ");
+        	
+        	try {
+        		int choice = sc.nextInt();
+        		sc.nextLine();
+        		
+        		switch (choice) {
+        			case 1 :
+        				orderConsumer.start(bundleContext);
+        				break;
+        				
+        			case 2 :
+        				paymentConsumer.start(bundleContext);
+        				break;
+        				
+        			case 3 :
+        				deliveryConsumer.start(bundleContext);
+        				return;
+        				
+        			case 4:
+        				staffConsumer.start(bundleContext);
+        				return;
+        				
+        			case 5:
+                        running = false;
+                        System.out.println("Exiting Main Consumer. Goodbye!");
+                        break;
+        				
+        			default :
+        				System.out.println("Invalid choice. Please try again.");
+                        break;
+        		}
+        	} catch (NoSuchElementException e) {
+        		System.out.println("Invalid input. Please enter a number corresponding to the menu options.");
+                sc.nextLine(); // Clear the invalid input
+        	} catch (Exception e) {
+        		System.out.println("An unexpected error occurred: " + e.getMessage());
+                e.printStackTrace();
+        	}
+        }
+	}
+
+	public void stop(BundleContext bundleContext) throws Exception {
+		System.out.println("Stopping Main Consumer Bundle. Bye!");
+	}
+	
+	/**
+     * Prints the main menu options.
+     */
+	private void printMenu() {
+	    System.out.println("\n\t\t╔══════════════════════════════════════════════════════════════╗");
+	    System.out.println("\t\t\t╠══════════════════════════════════════════════════════════════╣");
+	    System.out.println("\t\t\t║                     SELECT AN ACTION                         ║");
+	    System.out.println("\t\t\t╠══════════════════════════════════════════════════════════════╣");
+	    System.out.println("\t\t\t║  1. 🍽️  Order Management                                     ║");
+	    System.out.println("\t\t\t║  2. 💳  Payment Management                                   ║");
+	    System.out.println("\t\t\t║  3. 🚚  Delivery Management                                  ║");
+	    System.out.println("\t\t\t║  4. 👨‍🍳  Staff Management                                     ║");
+	    System.out.println("\t\t\t║  5. 🚪  Exit                                                 ║");
+	    System.out.println("\t\t\t╚══════════════════════════════════════════════════════════════╝");
+	}
+
+}

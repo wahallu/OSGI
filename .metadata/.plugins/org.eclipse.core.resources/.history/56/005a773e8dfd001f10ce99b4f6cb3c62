@@ -1,0 +1,69 @@
+package staff_consumer;
+
+import java.util.Scanner;
+
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import staff_producer.StaffSalaryService;
+
+
+public class StaffConsumerActivator implements BundleActivator {
+
+	ServiceReference serviceReference;
+    private Scanner scanner;
+
+    public void start(BundleContext context) throws Exception {
+        System.out.println("Staff Management Consumer Started");
+        serviceReference = context.getServiceReference(StaffSalaryService.class.getName());
+        
+        if (serviceReference == null) {
+            System.out.println("Staff Salary Service is not available. Please ensure the Staff Producer bundle is active.");
+            return;
+        }
+
+        StaffSalaryService staffSalaryService = (StaffSalaryService) context.getService(serviceReference);
+        scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n------ Choose an option from Staff Management ------");
+            System.out.println("1. Add Staff Salary");
+            System.out.println("2. View All Salaries");
+            System.out.println("3. Calculate Total Salaries");
+            System.out.println("4. Get Salary by Role");
+            System.out.println("5. Exit");
+
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1:
+                    staffSalaryService.addSalaryDetails();
+                    break;
+                case 2:
+                    staffSalaryService.displaySalaries();
+                    break;
+                case 3:
+                    staffSalaryService.calculateTotalSalaries();
+                    break;
+                case 4:
+                    System.out.print("Enter Role (Chef/Waiter/Manager/Cashier): ");
+                    String role = scanner.nextLine();
+                    staffSalaryService.getSalaryByRole(role);
+                    break;
+                case 5:
+                    System.out.println("Exiting Staff Management System...");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+
+    public void stop(BundleContext context) throws Exception {
+        System.out.println("Staff Management Consumer Stopped");
+        context.ungetService(serviceReference);
+    }
+
+}
